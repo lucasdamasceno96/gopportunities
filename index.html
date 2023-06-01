@@ -1,64 +1,92 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Consumindo API em Go</title>
-  <style>
-    /* Estilos CSS para a tabela */
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-    
-    th, td {
-      padding: 8px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    
-    th {
-      background-color: #f2f2f2;
-    }
-  </style>
+    <title>GO Opportunities</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-  <h1>Vagas Abertas</h1>
-  
-  <table id="openingsTable">
-    <tr>
-      <th>Role</th>
-      <th>Company</th>
-      <th>Location</th>
-      <th>Remote</th>
-      <th>Link</th>
-      <th>Salary</th>
-    </tr>
-  </table>
-  
-  <script>
-    // Função para fazer a requisição HTTP e preencher a tabela com os dados retornados
-    function getOpenings() {
-      fetch('http://localhost:8080/api/v1/openings')
-        .then(response => response.json())
-        .then(data => {
-          const openingsTable = document.getElementById('openingsTable');
-          
-          data.data.forEach(opening => {
-            const row = openingsTable.insertRow();
-            row.insertCell(0).innerHTML = opening.Role;
-            row.insertCell(1).innerHTML = opening.Company;
-            row.insertCell(2).innerHTML = opening.Location;
-            row.insertCell(3).innerHTML = opening.Remote ? 'Sim' : 'Não';
-            row.insertCell(4).innerHTML = `<a href="${opening.Link}" target="_blank">${opening.Link}</a>`;
-            row.insertCell(5).innerHTML = opening.Salary;
-          });
-        })
-        .catch(error => {
-          console.error('Erro ao obter as vagas:', error);
-        });
-    }
-    
-    // Chama a função para obter as vagas quando a página é carregada
-    window.onload = getOpenings;
-  </script>
+    <table id="openingsTable">
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Company</th>
+                <th>Location</th>
+                <th>Remote</th>
+                <th>Link</th>
+                <th>Salary</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // Função para renderizar os dados na tabela
+        function renderOpenings(openings) {
+            const tableBody = document.querySelector("#openingsTable tbody");
+
+            openings.forEach(opening => {
+                const row = document.createElement("tr");
+
+                const roleCell = document.createElement("td");
+                roleCell.textContent = opening.Role;
+                row.appendChild(roleCell);
+
+                const companyCell = document.createElement("td");
+                companyCell.textContent = opening.Company;
+                row.appendChild(companyCell);
+
+                const locationCell = document.createElement("td");
+                locationCell.textContent = opening.Location;
+                row.appendChild(locationCell);
+
+                const remoteCell = document.createElement("td");
+                remoteCell.textContent = opening.Remote ? "Yes" : "No";
+                row.appendChild(remoteCell);
+
+                const linkCell = document.createElement("td");
+                const linkAnchor = document.createElement("a");
+                linkAnchor.textContent = "Link";
+                linkAnchor.href = opening.Link;
+                linkAnchor.target = "_blank";
+                linkCell.appendChild(linkAnchor);
+                row.appendChild(linkCell);
+
+                const salaryCell = document.createElement("td");
+                salaryCell.textContent = opening.Salary;
+                row.appendChild(salaryCell);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Função assíncrona para buscar os dados da API
+        async function getOpenings() {
+            try {
+                const response = await axios.get("http://localhost:8080/api/v1/openings");
+                const openings = response.data.data;
+                renderOpenings(openings);
+            } catch (error) {
+                console.error("Erro ao buscar os dados:", error);
+            }
+        }
+
+        // Chamada da função para buscar os dados e renderizar a tabela
+        getOpenings();
+    </script>
 </body>
 </html>
