@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Consumindo API em Go</title>
+  <style>
+    /* Estilos CSS para a tabela */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Vagas Abertas</h1>
+  
+  <table id="openingsTable">
+    <tr>
+      <th>Role</th>
+      <th>Company</th>
+      <th>Location</th>
+      <th>Remote</th>
+      <th>Link</th>
+      <th>Salary</th>
+    </tr>
+  </table>
+  
+  <script>
+    // Função para fazer a requisição HTTP e preencher a tabela com os dados retornados
+    function getOpenings() {
+      fetch('http://localhost:8080/api/v1/openings')
+        .then(response => response.json())
+        .then(data => {
+          const openingsTable = document.getElementById('openingsTable');
+          
+          data.data.forEach(opening => {
+            const row = openingsTable.insertRow();
+            row.insertCell(0).innerHTML = opening.Role;
+            row.insertCell(1).innerHTML = opening.Company;
+            row.insertCell(2).innerHTML = opening.Location;
+            row.insertCell(3).innerHTML = opening.Remote ? 'Sim' : 'Não';
+            row.insertCell(4).innerHTML = `<a href="${opening.Link}" target="_blank">${opening.Link}</a>`;
+            row.insertCell(5).innerHTML = opening.Salary;
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao obter as vagas:', error);
+        });
+    }
+    
+    // Chama a função para obter as vagas quando a página é carregada
+    window.onload = getOpenings;
+  </script>
+</body>
+</html>
